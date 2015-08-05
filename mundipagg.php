@@ -25,7 +25,6 @@ try
 
     // Define dados do pedido
     $createSaleRequest->addCreditCardTransaction()
-        ->setPaymentMethodCode(\MundiPagg\One\DataContract\Enum\PaymentMethodEnum::SIMULATOR)
         ->setInstallmentCount($installmentCount)
         ->setAmountInCents($amountInCents)
         ->setCreditCard($creditCard)
@@ -61,5 +60,5 @@ finally
     // Devolve resposta
     header('Content-Type: application/json');
     http_response_code($httpStatusCode);
-    print json_encode($response);
+    echo json_encode($response);
 }
