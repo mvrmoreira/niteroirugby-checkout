@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>Niterói Rugby Checkout</title>
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon-mundi.ico">
+</head>
+<body>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <style>
+        .demo-container {
+            width: 100%;
+            max-width: 350px;
+            margin: 50px auto;
+        }
+        input {
+            margin: 10px auto;
+        }
+    </style>
+
+    <div class="demo-container">
+
+        <div class="text-center">
+            <img src="img/logo-mundi.png"><br><br>
+        </div>
+
+        <div class="alert alert-success" style="display: none"><strong>Parabéns!</strong> <span id="alert-success-message"></span></div>
+
+        <div class="alert alert-danger" style="display: none"><strong>Oops!</strong> <span id="alert-error-message"></span></div>
+
+        <div class="card-wrapper"></div>
+
+        <div class="form-container active">
+            <form>
+                <input class="form-control" placeholder="Número do cartão" required="required" type="text" name="number">
+                <input class="form-control" placeholder="Nome presente no cartão" required="required" type="text" name="name">
+                <input class="form-control" placeholder="Validade do cartão" required="required" type="text" name="expiry">
+                <input class="form-control" placeholder="Código de segurança" required="required" type="text" name="cvc">
+                <select class="form-control" required="required" name="installment" id="installment">
+                    <option value="1">Á vista</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                </select>
+                <input class="form-control" placeholder="Valor" required="required" type="text" name="amount" id="amount">
+                <input class="btn btn-success btn-block" type="submit">
+            </form>
+        </div>
+    </div>
+
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.card.js"></script>
+    <script src="js/jquery.maskMoney.min.js"></script>
+    <script>
+        $(function(){
+
+            $('form').card({
+                // a selector or DOM element for the container
+                // where you want the card to appear
+                container: '.card-wrapper', // *required*
+
+                // all of the other options from above
+            });
+
+            $("#installment").on("change", function(){
+                var count = $(this).val();
+                var amountPlaceHolder = count > 1 ? "Valor da parcela" : "Valor";
+                $("#amount").prop("placeholder", amountPlaceHolder);
+            });
+
+            $('#amount').maskMoney({prefix:'R$ ', allowNegative: true, thousands:'.', decimal:',', affixesStay: true});
+
+            $("form").on("submit", function(event){
+
+                $(".alert").hide();
+                $("input[type='submit']").attr("disabled", "disabled");
+
+                $.ajax({
+                    url: "mundipagg.php",
+                    method: "POST",
+                    data: $("form").serialize(),
+                    dataType: "json"
+                }).done(function(response){
+                    $("#alert-success-message").html(response.message).parent().show();
+                }).error(function(jqXHR){
+                    $("#alert-error-message").html(jqXHR.responseJSON.message).parent().show();
+                }).always(function(){
+                    $("input[type='submit']").removeAttr("disabled");
+                });
+
+                event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

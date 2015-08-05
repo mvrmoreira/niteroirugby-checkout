@@ -1,0 +1,5 @@
+{
+    "require": {
+        "mundipagg/mundipagg-one-php": "dev-master"
+    }
+}
