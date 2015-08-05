@@ -6,7 +6,10 @@ try
     require_once(dirname(__FILE__) . '/vendor/autoload.php');
 
     // Extrai somente números do valor
-    $amountInCents = preg_replace("/[^0-9a-zA-Z ]/", "", $_POST['amount']);
+    $amountInCents = str_replace(array('R', '$', ' ', '.', ','), '', $_POST['amount']);
+
+    // Obtém a quantidade de parcelas
+    $installmentCount = (int) $_POST['installment'];
 
     // Cria um objeto de cartão de crédito a partir dos dados recebidos
     $creditCard = \MundiPagg\One\Helper\CreditCardHelper::createCreditCard($_POST['number'], $_POST['name'], $_POST['expiry'], $_POST['cvc']);
@@ -23,12 +26,13 @@ try
     // Define dados do pedido
     $createSaleRequest->addCreditCardTransaction()
         ->setPaymentMethodCode(\MundiPagg\One\DataContract\Enum\PaymentMethodEnum::SIMULATOR)
+        ->setInstallmentCount($installmentCount)
         ->setAmountInCents($amountInCents)
         ->setCreditCard($creditCard)
         ;
 
     // Cria um objeto ApiClient
-    $apiClient = new MundiPagg\ApiClient();
+    $apiClient = new \MundiPagg\ApiClient();
 
     // Faz a chamada para criação
     $createSaleResponse = $apiClient->createSale($createSaleRequest);
