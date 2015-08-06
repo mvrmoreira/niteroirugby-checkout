@@ -2,6 +2,9 @@
 
 try
 {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: POST');  
+
     // Carrega dependências
     require_once(dirname(__FILE__) . '/vendor/autoload.php');
 
